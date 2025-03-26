@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Музыкальный плеер misha_meow</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: url('https://sun1-15.userapi.com/s/v1/ig2/UtiY10WPNAvZF13eaiKAaedOQSdv_gRYzgesvi6y0_a4XVs-FxfH5UKrIbx2cWWQ2BZN0aLJQFsPFuagVu2qOIaJ.jpg?quality=95&as=32x57,48x85,72x128,108x192,160x284,240x427,360x640,480x853,540x960,640x1138,720x1280&from=bu&u=-bVOAAJff9WgV1L_SpAHNWZSIvuWNILE4OObHzsLl4U') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            padding: 20px;
+        }
+        
+        .track-container {
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255, 102, 196, 0.7);
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(255, 102, 196, 0.3);
+            transition: transform 0.5s;
+        }
+        
+        .profile-pic:hover {
+            transform: scale(1.05) rotate(5deg);
+        }
+        
+        .user-info {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            color: #ffffff;
+        }
+        
+        .player-section {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .track-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+            max-width: 100%;
+            color: #ffffff;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin: 10px 0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, rgba(255,102,196,0.8), rgba(255,154,139,0.8));
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+        
+        .time-stamps {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            gap: 25px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.1);
+        }
+        
+        .control-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: #ffffff;
+            opacity: 0.9;
+        }
+        
+        .play-pause-btn {
+            background: rgba(255, 102, 196, 0.7);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 102, 196, 0.3);
+        }
+        
+        .play-pause-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 102, 196, 0.8);
+        }
+        
+        .play-pause-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 25px;
+            margin: 20px 0 25px;
+        }
+        
+        .social-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .social-avatar {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            border: 2px solid rgba(255, 102, 196, 0.5);
+            box-sizing: border-box;
+        }
+        
+        .social-avatar:hover {
+            transform: scale(1.05) rotate(5deg);
+            border-color: rgba(255, 102, 196, 0.8);
+            box-shadow: 0 5px 15px rgba(255, 102, 196, 0.3);
+        }
+        
+        .social-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .social-avatar:hover img {
+            transform: scale(1.05);
+        }
+        
+        .social-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover .social-label {
+            color: #ff66c4;
+        }
+        
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            cursor: pointer;
+        }
+        
+        .start-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="start-screen" id="startScreen">
+        <div class="start-text">Нажмите для продолжения</div>
+    </div>
+
+    <div class="track-container">
+        <img src="https://sun9-22.userapi.com/impg/OCudoh3Z84bbj-0eAz7gcRYjlyU9X-_YdQK8iA/a8bwPQpeWNE.jpg?size=736x736&quality=95&sign=6a4c8a7e2566caea129c7b75ca4d4c93&type=album" alt="Profile picture" class="profile-pic">
+        <div class="user-info">@misha_meow</div>
+        
+        <div class="social-icons">
+            <a href="https://t.me/misha_meow" class="social-icon" target="_blank">
+                <div class="social-avatar">
+                    <img src="https://sun9-12.userapi.com/s/v1/ig2/qk1tONhh_drhYKGCMV3iTdeEzcBJTnxnyRxSvNGiu1Y9IhbLaQtqQ2DyPZEFDKPR2N_yWWOyC5ZQvzwPGfHfOMi6.jpg?quality=95&as=32x32,48x48,72x72,108x108,160x160,240x240,360x360,480x480,540x540,640x640,720x720,736x736&from=bu&u=vS0QG6mCYe-v_qCTEL_gzwH_CZRuHfaca5iuGj1CLFA&cs=510x510" alt="Telegram">
+                </div>
+                <span class="social-label">tg</span>
+            </a>
+            <a href="https://vk.com/misha_meow" class="social-icon" target="_blank">
+                <div class="social-avatar">
+                    <img src="https://sun1-86.userapi.com/s/v1/ig2/hEkSGkEW8-KoyPO_ZQvBeDGfvPyh7i0kbkfVTxzszOtuf-hIyxRPFuADliD9NtnEtuV-U0DCpNYiw2wgEriKdnDW.jpg?quality=95&as=32x43,48x64,72x96,108x144,160x213,240x320,360x480,480x640,540x720,640x853,720x960,736x981&from=bu&u=YHzHjfJNJ45vuBef3mzJlhZcgXBSXUBfLabg1iaPiXs" alt="VK">
+                </div>
+                <span class="social-label">vk</span>
+            </a>
+        </div>
+        
+        <div class="player-section">
+            <div class="track-name" id="trackTitle">madk1d — рехаб</div>
+            
+            <div class="progress-container" id="progressContainer">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            
+            <div class="time-stamps">
+                <span id="currentTime">0:00</span>
+                <span id="duration">2:05</span>
+            </div>
+            
+            <div class="player-controls">
+                <button class="control-btn" id="prevBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
+                    </svg>
+                </button>
+                <button id="playPauseBtn" class="play-pause-btn">
+                    <svg viewBox="0 0 24 24">
+                        <path id="playIcon" d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+                <button class="control-btn" id="nextBtn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audioPlayer" src="madkid-rehab.mp3"></audio>
+
+    <script>
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playIcon');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+        const currentTimeEl = document.getElementById('currentTime');
+        const durationEl = document.getElementById('duration');
+        const trackTitle = document.getElementById('trackTitle');
+        const startScreen = document.getElementById('startScreen');
+        
+        const playIconPath = "M8 5v14l11-7z";
+        const pauseIconPath = "M6 19h4V5H6v14zm8-14v14h4V5h-4z";
+        
+        let isPlaying = false;
+        
+        // Скрываем плеер до нажатия
+        document.querySelector('.track-container').style.display = 'none';
+        
+        // Форматирование времени
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            const seconds = Math.floor(time % 60);
+            return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+        
+        // Обработчик клика по стартовому экрану
+        startScreen.addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            document.querySelector('.track-container').style.display = 'flex';
+            audioPlayer.play().then(() => {
+                isPlaying = true;
+                updatePlayIcon();
+            }).catch(error => {
+                console.error("Ошибка воспроизведения:", error);
+                alert("Не удалось воспроизвести аудио. Проверьте наличие файла madkid-rehab.mp3");
+            });
+        });
+        
+        audioPlayer.volume = 0.7;
+        
+        function updateTime() {
+            const currentTime = audioPlayer.currentTime;
+            const duration = audioPlayer.duration;
+            
+            const progressPercent = (duration ? (currentTime / duration) * 100 : 0);
+            progressBar.style.width = `${progressPercent}%`;
+            
+            currentTimeEl.textContent = formatTime(currentTime);
+            
+            if (duration) {
+                durationEl.textContent = formatTime(duration);
+            }
+        }
+        
+        progressContainer.addEventListener('click', (e) => {
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audioPlayer.duration;
+            
+            audioPlayer.currentTime = (clickX / width) * duration;
+        });
+        
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                audioPlayer.pause();
+            } else {
+                audioPlayer.play();
+            }
+            isPlaying = !isPlaying;
+            updatePlayIcon();
+        });
+        
+        function updatePlayIcon() {
+            playIcon.setAttribute('d', isPlaying ? pauseIconPath : playIconPath);
+        }
+        
+        audioPlayer.addEventListener('timeupdate', updateTime);
+        
+        audioPlayer.addEventListener('ended', () => {
+            isPlaying = false;
+            updatePlayIcon();
+            progressBar.style.width = '0%';
+            currentTimeEl.textContent = '0:00';
+            audioPlayer.currentTime = 0;
+        });
+        
+        audioPlayer.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audioPlayer.duration);
+        });
+    </script>
+</body>
+</html>
